@@ -33,7 +33,7 @@ def encrypt(key, filename):
 
 
 def decrypt(key, filename):
-    outFile = os.path.join(os.path.dirname(filename), os.path.basename(filename[11:]))
+    outFile = os.path.join(os.path.dirname(filename), os.path.basename(filename)[11:])
     chunksize = 64 * 1024
     with open(filename, "rb") as infile:
         filesize = infile.read(16)
@@ -64,37 +64,34 @@ def display_info():
     print(colored('¦','green'), '      Thank You! Please follow me up on GitHub @vivekpal1     ' , colored('¦','green'))
     print(colored('¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦','green'))
 
+def get_input_file_path(prompt):
+    file_path = input(prompt)
+    file_path = os.path.abspath(file_path)
+    if not os.path.exists(file_path):
+        print("The file does not exist")
+        sys.exit(0)
+    return file_path
+
 display_info()
 choice = input("Do you want to (E)ncrypt or (D)ecrypt? ").lower()
 password = input("Enter the password: ")
 
-encFiles = allfiles()
-
 if choice == "e":
-    file_path = input("Enter the file path to encrypt: ")
-    if not os.path.exists(file_path):
-        print("The file does not exist")
-        sys.exit(0)
-    elif os.path.basename(file_path).startswith("(encrypted)"):
+    file_path = get_input_file_path("Enter the file path to encrypt: ")
+    if os.path.basename(file_path).startswith("(encrypted)"):
         print("%s is already encrypted" % file_path)
         sys.exit()
-    else:
-        encrypt(SHA256.new(password.encode('utf-8')).digest(), file_path)
-        print("Done encrypting %s" % file_path)
-        os.remove(file_path)
+    encrypt(SHA256.new(password.encode('utf-8')).digest(), file_path)
+    print("Done encrypting %s" % file_path)
+    os.remove(file_path)
 
 elif choice == "d":
-    file_path = input("Enter the file path to decrypt: ")
-    if not os.path.exists(file_path):
-        print("The file does not exist")
-        sys.exit(0)
-    elif not os.path.basename(file_path).startswith("(encrypted)"):
+    file_path = get_input_file_path("Enter the file path to decrypt: ")
+    if not os.path.basename(file_path).startswith("(encrypted)"):
         print("%s is already not encrypted" % file_path)
         sys.exit()
-    else:
-        decrypt(SHA256.new(password.encode('utf-8')).digest(), file_path)
-        print("Done decrypting %s" % file_path)
-        os.remove(file_path)
+    decrypt(SHA256.new(password.encode('utf-8')).digest(), file_path)
+    print("Done decrypting %s" % file_path)
 
 else:
     print("Please choose a valid command.")
