@@ -11,14 +11,20 @@ if ! command -v python3 &>/dev/null; then
     exit 1
 fi
 
+# Check if pip is installed
+if ! command -v pip &>/dev/null; then
+    echo "pip is not installed. Installing pip..."
+    sudo pacman -Sy --noconfirm python-pip
+fi
+
 # Check if required packages are installed
 REQUIRED_PACKAGES=("pycryptodome" "termcolor")
 for package in "${REQUIRED_PACKAGES[@]}"; do
     if ! python3 -c "import ${package}" &>/dev/null; then
-        echo "${package} is not installed. Please install it using pip."
-        exit 1
+        echo "${package} is not installed. Installing ${package}..."
+        pip install "${package}"
     fi
 done
 
-
+# Run the Python script
 python3 "$PYTHON_SCRIPT"
